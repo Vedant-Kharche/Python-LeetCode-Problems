@@ -1,21 +1,22 @@
-row = [1] * n   # Initialize a row of size 'n' filled with 1s. 
-                # This represents the base case: there's only one way to move right across the last row.
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        # Initialize the bottom row of the grid with 1s.
+        # Each cell has only 1 way to reach the destination (by moving right).
+        row = [1] * n  
 
-for i in range(m - 1):  
-    # Repeat the process (m - 1) times to simulate moving upward row by row in an m x n grid.
-    
-    newRow = [1] * n   # Start a new row, again with 1s (rightmost column always has only 1 way).
-    
-    for j in range(n - 2, -1, -1):  
-        # Traverse from second last column (n-2) to the first column (0).
-        # Reason: each cell depends on the cell to its right and the cell below (from previous row).
-        
-        newRow[j] = newRow[j + 1] + row[j]  
-        # Update the number of ways:
-        # newRow[j + 1] = ways to move right,
-        # row[j] = ways to move down,
-        # so total ways = right + down.
-    
-    row = newRow   # Move to the next row (going upward in the grid).
+        # Loop through the remaining (m - 1) rows from bottom to top
+        for i in range(m - 1):
+            # Start a new row with all 1s (since the rightmost cell always has 1 way).
+            newRow = [1] * n  
 
-return row[0]   # Finally, return the number of ways from the top-left corner (0,0).
+            # Traverse the row from right to left, filling in number of paths.
+            for j in range(n - 2, -1, -1):  
+                # The number of ways to reach the destination from this cell
+                # = ways from the cell to the right + ways from the cell below
+                newRow[j] = newRow[j + 1] + row[j]
+
+            # Move up to the next row
+            row = newRow  
+
+        # The top-left cell contains the total number of unique paths
+        return row[0]  
