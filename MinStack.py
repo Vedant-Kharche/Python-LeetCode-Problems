@@ -1,31 +1,32 @@
 class MinStack:
     def __init__(self):
-        # Normal stack to store values
+        # Main stack to store all values
         self.stack = []
-        # Auxiliary stack to store the minimum value at each level
+        # Auxiliary stack that tracks the minimum value at each point in time
         self.minStack = []
 
     def push(self, val: int) -> None:
-        # Push the value onto the normal stack
+        # Push the value onto the main stack
         self.stack.append(val)
 
-        # Determine the new minimum:
-        # - If minStack has values, compare current val with the last minimum
-        # - Otherwise, the value itself is the minimum
-        val = min(val, self.minStack[-1] if self.minStack else val)
+        # Compute the new minimum:
+        # - If minStack has items, compare the current value with the last stored minimum
+        # - If minStack is empty, current value itself is the minimum
+        newMin = val if not self.minStack else min(val, self.minStack[-1])
 
-        # Push the new minimum onto minStack
-        self.minStack.append(val)
+        # Push the computed minimum to minStack
+        self.minStack.append(newMin)
 
     def pop(self) -> None:
-        # Pop from both stacks because they grow and shrink together
+        # Pop the top element from both stacks
+        # (Each position in minStack corresponds to the same position in stack)
         self.stack.pop()
         self.minStack.pop()
 
     def top(self) -> int:
-        # Return the top element of the main stack
+        # Return the top value of the main stack
         return self.stack[-1]
 
     def getMin(self) -> int:
-        # The top of minStack is always the current minimum
+        # Return the top value of minStack (the current minimum)
         return self.minStack[-1]
