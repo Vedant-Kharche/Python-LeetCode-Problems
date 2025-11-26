@@ -1,38 +1,30 @@
 class Solution:
     def lengthOfLIS(self, nums):
-        n = len(nums)
+        # LIS[i] will store the length of the Longest Increasing Subsequence
+        # starting *at* index i
+        #
+        # Initialize all values to 1 because the LIS that includes only nums[i]
+        # itself has length = 1
+        LIS = [1] * len(nums)
 
-        # memo[i][j+1] stores the LIS value starting from index i
-        # when the previous element chosen is at index j
-        # We use j+1 because j can be -1 (meaning no previous element chosen)
-        memo = [[-1] * (n + 1) for _ in range(n)]
+        # We process the array from right to left.
+        # Why? Because to compute LIS[i], we look at all future positions j > i.
+        # By going right→left, all LIS[j] values are already computed.
+        for i in range(len(nums) - 1, -1, -1):
 
-        def dfs(i, j):
-            """
-            dfs(i, j) = length of LIS using nums[i:] given previous chosen index j.
-            j = -1 means no previous number included yet.
-            """
+            # Check all positions to the right of i.
+            # If nums[j] is larger than nums[i], then nums[i] can be extended
+            # into an increasing subsequence by taking nums[j].
+            for j in range(i + 1, len(nums)):
 
-            # Base case: reached end of array
-            if i == n:
-                return 0
+                # Valid increasing step: nums[i] < nums[j]
+                if nums[i] < nums[j]:
 
-            # Memoized result: return if already computed
-            # We use j+1 because j can be -1
-            if memo[i][j + 1] != -1:
-                return memo[i][j + 1]
+                    # Update LIS[i]:
+                    # Option 1: keep old LIS[i]
+                    # Option 2: extend LIS[j] → 1 (for nums[i]) + LIS[j]
+                    LIS[i] = max(LIS[i], 1 + LIS[j])
 
-            # Option 1: Skip nums[i]
-            LIS = dfs(i + 1, j)
-
-            # Option 2: Take nums[i] IF it forms an increasing order
-            if j == -1 or nums[j] < nums[i]:
-                # If we take nums[i], add 1 to LIS count
-                LIS = max(LIS, 1 + dfs(i + 1, i))
-
-            # Store in memo
-            memo[i][j + 1] = LIS
-            return LIS
-
-        # Start from index 0 with no previous element chosen (j = -1)
-        return dfs(0, -1)
+        # The answer is the maximum value in LIS[] because
+        # LIS could start anywhere in the array.
+        return max(LIS)
