@@ -1,38 +1,47 @@
 class Solution:
     def validTree(self, n: int, edges: List[List[int]]) -> bool:
-        # ✅ A tree with n nodes must have exactly (n-1) edges
-        # If there are more than n-1 edges, it MUST contain a cycle → not a tree
-        if len(edges) > (n - 1):
+        # Quick check: a tree with n nodes must have exactly n-1 edges.
+        # If edges count differs, it can't be a tree (either disconnected or has extra cycles).
+        if n == 0:
+            # By convention: an empty graph can be considered a valid tree. If your platform
+            # requires False for n==0, change this accordingly.
+            return True
+        if len(edges) != n - 1:
             return False
 
-        # ✅ Build adjacency list for the undirected graph
-        adj = [[] for _ in range(n)]
-        for u, v in edges:
-            adj[u].append(v)
-            adj[v].append(u)
+        # Build adjacency list for the undirected graph
+        adj = {i: [] for i in range(n)}
+        for a, b in edges:
+            adj[a].append(b)
+            adj[b].append(a)
 
-        # ✅ Keep track of visited nodes
-        visit = set()
+        visited = set()
 
-        # ✅ Depth First Search (DFS) to detect cycles and traverse graph
-        def dfs(node, par):
-            # If we revisit a node, that means we found a cycle → not a tree
-            if node in visit:
-                return False
+        def dfs(node: int, parent: int) -> bool:
+            """
+            Return False if a cycle is detected reachable from `node`, True otherwise.
+            parent is the node we came from so we don't treat the immediate back-edge as a cycle.
+            """
+            # mark current node visited
+            visited.add(node)
 
-            visit.add(node)
-
-            # Explore all neighbors
+            # iterate neighbors
             for nei in adj[node]:
-                # Skip the parent (don't go back where we came from)
-                if nei == par:
+                # skip the parent node (the edge back to parent is not a cycle)
+                if nei == parent:
                     continue
-                # If DFS on neighbor returns False, graph is not a tree
+
+                # if neighbor already visited, we found a cycle
+                if nei in visited:
+                    return False
+
+                # recursively visit neighbor; if subtree has a cycle, propagate False
                 if not dfs(nei, node):
                     return False
+
+            # no cycle found in this branch
             return True
 
-        # ✅ A valid tree must satisfy two conditions:
-        # 1. Connected → all nodes must be visited (len(visit) == n)
-        # 2. No cycles → DFS must return True
-        return dfs(0, -1) and len(visit) == n
+        # Start DFS from node 0 (any node could be used).
+        # If DFS returns True (no cycle) AND we've visited all nodes (connected), it's a tree.
+        return dfs(0, -1) and len(visited) == n
