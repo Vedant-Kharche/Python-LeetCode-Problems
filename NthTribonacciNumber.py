@@ -1,24 +1,32 @@
-class Solution(object):
-    def tribonacci(self, n):
-        # Initialize a list A of size (n+1) to store computed Tribonacci values
-        A = [0] * (n + 1)
+class Solution:
+    def __init__(self):
+        # Dictionary used for memoization (caching previously computed results)
+        # Helps avoid recomputing the same Tribonacci numbers multiple times
+        self.dp = {}
 
-        # Handle base cases:
-        # T(0) = 0, T(1) = 1, T(2) = 1
-        if n == 0 or n == 1:
-            return n  # T(0) = 0, T(1) = 1
-        if n == 2:
-            return 1  # T(2) = 1
+    def tribonacci(self, n: int) -> int:
+        # ---------------- BASE CASES ----------------
+        # According to the Tribonacci definition:
+        # T(0) = 0
+        # T(1) = 1
+        # T(2) = 1
+        if n <= 2:
+            return 1 if n != 0 else 0
 
-        # Initialize base values for Tribonacci sequence
-        A[0] = 0  # T(0)
-        A[1] = 1  # T(1)
-        A[2] = 1  # T(2)
+        # ---------------- MEMOIZATION CHECK ----------------
+        # If we have already computed tribonacci(n),
+        # return the stored result instead of recomputing
+        if n in self.dp:
+            return self.dp[n]
 
-        # Compute Tribonacci values from T(3) to T(n) using dynamic programming
-        for i in range(3, n + 1):
-            # T(i) = T(i-1) + T(i-2) + T(i-3)
-            A[i] = A[i - 1] + A[i - 2] + A[i - 3]
+        # ---------------- RECURSIVE RELATION ----------------
+        # Tribonacci formula:
+        # T(n) = T(n-1) + T(n-2) + T(n-3)
+        self.dp[n] = (
+            self.tribonacci(n - 1) +
+            self.tribonacci(n - 2) +
+            self.tribonacci(n - 3)
+        )
 
-        # Return the nth Tribonacci number
-        return A[n]
+        # Return the cached result
+        return self.dp[n]
