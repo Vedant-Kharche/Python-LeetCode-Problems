@@ -1,45 +1,51 @@
-# Problem: Delete Node in a Binary Search Tree
-# Approach: Recursive BST deletion handling all cases (leaf, one child, two children)
-# Time Complexity: O(h), where h is the height of the tree
-#   - O(log N) for balanced BST, O(N) for skewed BST
-# Space Complexity: O(h) due to recursive call stack
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
 
-class Solution(object):
-    def deleteNode(self, root, key):
-       
-        # Base case: If the root is None, return None (nothing to delete)
+class Solution:
+    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+
+        # ✅ BASE CASE:
+        # If the tree is empty, return None
         if not root:
             return root
 
-        # If the key is greater, move to the right subtree
+        # ✅ STEP 1: SEARCH FOR THE NODE TO DELETE
+        # If key is greater than current node value → go RIGHT
         if key > root.val:
             root.right = self.deleteNode(root.right, key)
 
-        # If the key is smaller, move to the left subtree
+        # If key is smaller than current node value → go LEFT
         elif key < root.val:
             root.left = self.deleteNode(root.left, key)
 
-        # If key == root.val, we've found the node to delete
+        # ✅ STEP 2: NODE FOUND (key == root.val)
         else:
-            # Case 1: Node has no left child, return right child
+
+            # ✅ CASE 1: Node has NO LEFT child
+            # Replace node with its RIGHT child
             if not root.left:
                 return root.right
 
-            # Case 2: Node has no right child, return left child
+            # ✅ CASE 2: Node has NO RIGHT child
+            # Replace node with its LEFT child
             elif not root.right:
                 return root.left
 
-            # Case 3: Node has two children
-            # Find the in-order successor (minimum value in the right subtree)
-            curr = root.right
-            while curr.left:
-                curr = curr.left
+            # ✅ CASE 3: Node has TWO children
+            # Find the inorder successor (smallest value in right subtree)
+            cur = root.right
+            while cur.left:
+                cur = cur.left
 
-            # Replace current node's value with in-order successor's value
-            root.val = curr.val
+            # Replace root's value with successor's value
+            root.val = cur.val
 
-            # Recursively delete the in-order successor node from right subtree
+            # Delete the successor node from right subtree
             root.right = self.deleteNode(root.right, root.val)
 
-        # Return the updated root
+        # ✅ Return updated root
         return root
