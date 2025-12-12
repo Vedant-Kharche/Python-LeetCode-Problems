@@ -48,3 +48,42 @@ class Solution:
 
         # Return total number of islands found
         return islands
+
+
+# Number of Islands DFS Soln
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        # Directions for exploring neighbors: down, up, right, left
+        directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
+        # Get number of rows and columns in the grid
+        ROWS, COLS = len(grid), len(grid[0])
+
+        islands = 0  # Counter for number of islands
+
+        # DFS function to explore all connected land cells
+        def dfs(r, c):
+            # Base case: if out of bounds OR current cell is water ("0")
+            if (r < 0 or c < 0 or r >= ROWS or
+                c >= COLS or grid[r][c] == "0"
+            ):
+                return  # Stop exploring
+
+            # Mark current land cell as visited by turning it into water
+            # This prevents revisiting the same land cell
+            grid[r][c] = "0"
+
+            # Explore all 4 neighboring cells
+            for dr, dc in directions:
+                dfs(r + dr, c + dc)
+
+        # Traverse each cell in the grid
+        for r in range(ROWS):
+            for c in range(COLS):
+
+                # If the cell is land ("1"), we found the start of a new island
+                if grid[r][c] == "1":
+                    dfs(r, c)  # Explore the entire connected island
+                    islands += 1  # Increase island count
+
+        return islands  # Return total number of islands
