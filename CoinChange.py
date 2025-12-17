@@ -19,3 +19,40 @@ class Solution:
 
         # If dp[amount] was updated, return it; otherwise return -1 (no combination possible)
         return dp[amount] if dp[amount] != amount + 1 else -1
+
+#TOP DOWN APPROACH
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        # Memoization dictionary to store the minimum coins needed
+        # for a given remaining amount
+        memo = {}
+
+        def dfs(amount):
+            # Base case: if amount is 0, no coins are needed
+            if amount == 0:
+                return 0
+
+            # If this amount has already been computed, return cached result
+            if amount in memo:
+                return memo[amount]
+
+            # Initialize result with a large number (acts as infinity)
+            res = 1e9
+
+            # Try using each coin
+            for coin in coins:
+                # Only proceed if coin value does not exceed the amount
+                if amount - coin >= 0:
+                    # Recursively compute coins needed for remaining amount
+                    # Add 1 for the current coin used
+                    res = min(res, 1 + dfs(amount - coin))
+
+            # Store the computed minimum coins for this amount
+            memo[amount] = res
+            return res
+
+        # Compute minimum coins needed for the full amount
+        minCoins = dfs(amount)
+
+        # If result is still infinity, it's not possible to form the amount
+        return -1 if minCoins >= 1e9 else minCoins
