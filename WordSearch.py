@@ -1,57 +1,49 @@
 class Solution:
     def exist(self, board: List[List[str]], word: str) -> bool:
-        # Total rows and columns in the board
+        # Number of rows and columns in the board
         ROWS, COLS = len(board), len(board[0])
 
-        # A set to track the cells we are currently visiting in the DFS path
-        # This prevents revisiting the same cell in the same path (no reuse of characters)
+        # Set to keep track of cells already used in the current path
         path = set()
 
+        # Depth First Search function
+        # r, c -> current row and column
+        # i -> index of current character in the word
         def dfs(r, c, i):
-            """
-            r, c => current cell coordinates
-            i    => index of current character in 'word' we are trying to match
-            """
 
-            # BASE CASE:
-            # If we've matched every character in 'word', return True
+            # If we have matched all characters of the word
+            # then we found the word
             if i == len(word):
                 return True
 
-            # BOUNDARY + VALIDATION CHECKS:
-            # 1. Out of bounds?
-            # 2. Does board[r][c] NOT match the word's current character?
-            # 3. Have we already visited this cell in the current path?
-            if (min(r, c) < 0 or                  # r < 0 or c < 0
-                r >= ROWS or c >= COLS or        # out of bounds
-                word[i] != board[r][c] or        # char mismatch
-                (r, c) in path):                 # already visited
+            # If out of bounds, or character does not match,
+            # or cell already used in current path → stop
+            if (r < 0 or c < 0 or
+                r >= ROWS or c >= COLS or
+                board[r][c] != word[i] or
+                (r, c) in path):
                 return False
 
-            # Add current cell to path => marking it as visited for this DFS branch
+            # Mark this cell as visited
             path.add((r, c))
 
-            # Explore all 4 possible directions for the next character:
-            # Down, Up, Right, Left
+            # Try all 4 possible directions
             res = (
-                dfs(r + 1, c    , i + 1) or
-                dfs(r - 1, c    , i + 1) or
-                dfs(r    , c + 1, i + 1) or
-                dfs(r    , c - 1, i + 1)
+                dfs(r + 1, c, i + 1) or   # down
+                dfs(r - 1, c, i + 1) or   # up
+                dfs(r, c + 1, i + 1) or   # right
+                dfs(r, c - 1, i + 1)      # left
             )
 
-            # BACKTRACK:
-            # Remove the cell from the path when returning so other branches can use it
+            # Backtrack → unmark this cell so other paths can use it
             path.remove((r, c))
 
             return res
 
-        # Try starting the DFS from every cell in the board
+        # Try to start the word from every cell in the grid
         for r in range(ROWS):
             for c in range(COLS):
-                # If any DFS path returns True, the word exists in the board
-                if dfs(r, c, 0):
+                if dfs(r, c, 0):  # try to match word starting here
                     return True
 
-        # If no starting point matched the entire word
         return False
